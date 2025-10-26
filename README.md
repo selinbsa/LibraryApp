@@ -7,9 +7,9 @@ Amaç, kullanıcıların yayımcı, yazar, kategori ve kitap ekleyebilmesini; ay
 
 ## Live Demo
 
-- **Live Site:** 
+- **Live Site:** https://libraryappfullstack.netlify.app/
 - **Live Backend:** https://libraryappspringbootbackend.onrender.com
-- **Repository:** 
+- **Repository:** https://github.com/selinbsa/LibraryApp.git
 
 ---
 
