@@ -50,11 +50,6 @@ export default function App() {
                 <h1 className="text-2xl font-semibold text-gray-800">
                   Kütüphane Sistemimize Hoşgeldiniz!
                 </h1>
-                <img
-                  src="/src/assets/kutuphane.jpeg"
-                  alt="Kütüphane"
-                  className="object-cover rounded-2xl shadow-lg w-full max-w-3xl mx-auto"
-                />
               </div>
             }
           />
