@@ -1,4 +1,4 @@
-/* Tailwind utility'lerini CSS içinde (@apply vb.) kullanacağımızı bildirir */
+
 @reference "tailwindcss";
 
 /* Tailwind v4 çekirdeği */
@@ -41,26 +41,25 @@
   .center-screen { @apply min-h-[60vh] grid place-items-center; }
 }
 
-/* === Form satırlarında üst üste binmeyi düzelt (JSX'e dokunmadan) === */
+
 form > .grid {
-  /* tailwind'in grid-cols-2 sınıfı kalsa bile,
-     otomatik sığdır: her hücre min 260px, gerekirse satır kırılır */
+  
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
   gap: 1rem !important;
 }
 
-/* grid hücreleri taşmasın */
+
 form > .grid > * {
   min-width: 0;
 }
 
-/* tüm input/select'ler tam genişlik olsun */
+
 .input, form input, form select, form textarea {
   width: 100%;
   box-sizing: border-box;
 }
 
-/* index.css */
+
 @layer base {
   main {
     @apply mx-auto px-4 py-8;

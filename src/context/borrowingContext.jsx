@@ -73,7 +73,7 @@ export function BorrowingProvider({ children }) {
 
     const created = await createBorrow(form);
 
-    // Optimistic: eklenen kaydı liste başına koy
+    // eklenen kaydı liste başına koy
     const newBook = books.find((b) => b.id === Number(form.bookId));
     setBorrows((prev) => [
       {
@@ -111,7 +111,7 @@ export function BorrowingProvider({ children }) {
     // 1) API isteği (await)
     await updateBorrowApi(id, form);
 
-    // 2) OPTIMISTIC UPDATE — tabloyu anında güncelle
+    // 2) tabloyu anında güncelle
     const patchedBook = books.find((b) => b.id === Number(form.bookId)) ||
       prev?.book || { id: Number(form.bookId) };
 
@@ -131,17 +131,11 @@ export function BorrowingProvider({ children }) {
 
     toast.success("Kayıt güncellendi");
 
-    // 3) ÖNEMLİ: Hemen load çağırmıyoruz.
-    //    Bazı backend'lerde PUT sonrası aynı veriler döner (kitap alanı veya diğerleri),
-    //    çağırırsak optimistic değişiklikleri "eski" verilerle geri yazabilir.
-    //    Eğer yine de periyodik senkron istiyorsan, burada küçük bir setTimeout ile
-    //    sadece kitap listesi değiştiğinde load tetiklenebilir.
-    // window.dispatchEvent(new Event("borrows:changed")); // <- UPDATE sonrası TETİKLEME **YAPMIYORUZ**
   };
 
   const remove = async (id) => {
     await deleteBorrow(id);
-    // Optimistic: hemen listeden düşür
+    // hemen listeden düşür
     setBorrows((prev) => prev.filter((r) => r.id !== id));
     toast.success("Kayıt silindi");
     // Diğer yerler dinliyorsa haber ver

@@ -24,7 +24,7 @@ export default function BorrowingPage() {
 
   useEffect(() => {
     if (borrows.length === 0) load();
-    // Kitaplar veya borrows başka yerden değişirse otomatik tazele (opsiyonel ama faydalı)
+    // Kitaplar veya borrows başka yerden değişirse otomatik tazele 
     const h = () => load();
     window.addEventListener("books:changed", h);
     window.addEventListener("borrows:changed", h);
@@ -32,7 +32,7 @@ export default function BorrowingPage() {
       window.removeEventListener("books:changed", h);
       window.removeEventListener("borrows:changed", h);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, []);
 
   const reset = () => {
@@ -60,8 +60,7 @@ export default function BorrowingPage() {
       borrowingDate: toDateInput(r.borrowingDate),
       bookId: r.book?.id ?? "",
     });
-    // İstersen formun başına kaydır:
-    // window.scrollTo({ top: 0, behavior: "smooth" });
+    
   };
 
   const selectedRemain = form.bookId

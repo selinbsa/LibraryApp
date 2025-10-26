@@ -16,7 +16,7 @@ const linkClass = ({ isActive }) =>
 export default function App() {
   return (
     <Layout>
-      {/* Üst bar (farklı renk) */}
+      
       <header className="bg-slate-800">
         <nav className="container mx-auto max-w-5xl h-14 px-4 flex items-center justify-center gap-2 sm:gap-4">
           <NavLink to="/" className={linkClass}>
@@ -40,7 +40,7 @@ export default function App() {
         </nav>
       </header>
 
-      {/* Tüm sayfa içeriklerini ortala */}
+      
       <main className="container mx-auto max-w-5xl px-4 py-10 text-center">
         <Routes>
           <Route

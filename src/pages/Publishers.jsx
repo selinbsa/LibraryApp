@@ -15,7 +15,7 @@ export default function PublishersPage() {
 
   useEffect(() => {
     if (publishers.length === 0) load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, []);
 
   const reset = () => {
@@ -41,7 +41,7 @@ export default function PublishersPage() {
 
     try {
       if (editingId) {
-        // ---- 2 ADIMLI GÜNCELLEME HİLESİ ----
+        
         const onlyAddressChanged =
           original &&
           original.name?.trim().toLowerCase() === payload.name.toLowerCase() &&
@@ -49,7 +49,7 @@ export default function PublishersPage() {
           original.address?.trim() !== payload.address;
 
         if (onlyAddressChanged) {
-          // 1) Geçici benzersiz ad ile güncelle (dupe kontrolünü aşmak için)
+          // 1) Geçici benzersiz ad ile güncelle
           const tmpName = `${payload.name} __tmp__${Date.now()}`;
           await update(editingId, {
             name: tmpName,

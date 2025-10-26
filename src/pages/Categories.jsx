@@ -11,7 +11,7 @@ export default function CategoryPage() {
 
   useEffect(() => {
     if (categories.length === 0) load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, []);
 
   const reset = () => {

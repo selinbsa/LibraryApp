@@ -11,7 +11,7 @@ export async function createPublisher(payload) {
 }
 
 export async function updatePublisher(id, payload) {
-  // Bazı servisler body'de de id bekler
+  
   const { data } = await api.put(`/publishers/${id}`, { id, ...payload });
   return data;
 }

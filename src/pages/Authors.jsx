@@ -15,7 +15,7 @@ export default function AuthorPage() {
 
   useEffect(() => {
     if (authors.length === 0) load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, []);
 
   const reset = () => {
