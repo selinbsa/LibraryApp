@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useBorrowing } from "../context/borrowingContext";
 
@@ -12,6 +13,7 @@ export default function BorrowingPage() {
     remainingFor,
     toDateInput,
     loading,
+    markReturned, 
   } = useBorrowing();
 
   const [form, setForm] = useState({
@@ -24,7 +26,6 @@ export default function BorrowingPage() {
 
   useEffect(() => {
     if (borrows.length === 0) load();
-    // Kitaplar veya borrows başka yerden değişirse otomatik tazele 
     const h = () => load();
     window.addEventListener("books:changed", h);
     window.addEventListener("borrows:changed", h);
@@ -32,7 +33,7 @@ export default function BorrowingPage() {
       window.removeEventListener("books:changed", h);
       window.removeEventListener("borrows:changed", h);
     };
-   
+    
   }, []);
 
   const reset = () => {
@@ -60,7 +61,6 @@ export default function BorrowingPage() {
       borrowingDate: toDateInput(r.borrowingDate),
       bookId: r.book?.id ?? "",
     });
-    
   };
 
   const selectedRemain = form.bookId
@@ -137,6 +137,7 @@ export default function BorrowingPage() {
             <th>Ad Soyad</th>
             <th>E-posta</th>
             <th>Alma Tarihi</th>
+            <th>İade Tarihi</th> 
             <th>Kitap</th>
             <th></th>
           </tr>
@@ -148,11 +149,21 @@ export default function BorrowingPage() {
               <td>{r.borrowerName}</td>
               <td>{r.borrowerMail}</td>
               <td>{toDateInput(r.borrowingDate)}</td>
+              <td>{toDateInput(r.returnDate)}</td> 
               <td>{r.book?.name}</td>
               <td className="flex gap-2">
-                <button className="btn" onClick={() => startEdit(r)}>
+                <button
+                  className="btn"
+                  onClick={() => startEdit(r)}
+                  disabled={!!r.returnDate}
+                >
                   Düzenle
                 </button>
+                {!r.returnDate && (
+                  <button className="btn" onClick={() => markReturned(r.id)}>
+                    İade Et
+                  </button>
+                )}
                 <button className="btn" onClick={() => remove(r.id)}>
                   Sil
                 </button>
@@ -161,7 +172,7 @@ export default function BorrowingPage() {
           ))}
           {borrows.length === 0 && (
             <tr>
-              <td colSpan={6} className="py-6 text-center opacity-70">
+              <td colSpan={7} className="py-6 text-center opacity-70">
                 Kayıt bulunamadı.
               </td>
             </tr>

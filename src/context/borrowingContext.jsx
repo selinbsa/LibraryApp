@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import {
@@ -9,8 +10,6 @@ import {
 import { listBooks } from "../services/books";
 
 const Ctx = createContext(null);
-
-// YYYY-MM-DD veya ISO → YYYY-MM-DD
 const toDateInput = (v) => (v ? String(v).slice(0, 10) : "");
 
 export function BorrowingProvider({ children }) {
@@ -24,7 +23,6 @@ export function BorrowingProvider({ children }) {
       const [bws, bs] = await Promise.all([listBorrows(), listBooks()]);
       const booksSafe = Array.isArray(bs) ? bs : [];
       const byId = new Map(booksSafe.map((b) => [b.id, b]));
-
       const enriched = (bws || []).map((r) => {
         const bookId = r.book?.id;
         if (bookId && byId.has(bookId)) {
@@ -33,7 +31,6 @@ export function BorrowingProvider({ children }) {
         }
         return r;
       });
-
       setBorrows(enriched);
       setBooks(booksSafe);
     } catch (e) {
@@ -46,7 +43,7 @@ export function BorrowingProvider({ children }) {
 
   useEffect(() => {
     load();
-    const h = () => load(); // kitap değişince tazele
+    const h = () => load();
     window.addEventListener("books:changed", h);
     return () => window.removeEventListener("books:changed", h);
   }, []);
@@ -70,25 +67,9 @@ export function BorrowingProvider({ children }) {
       toast.error("Stok yetersiz — bu kitap için yeni kayıt açılamaz.");
       return;
     }
-
-    const created = await createBorrow(form);
-
-    // eklenen kaydı liste başına koy
-    const newBook = books.find((b) => b.id === Number(form.bookId));
-    setBorrows((prev) => [
-      {
-        ...created,
-        borrowerName: String(form.borrowerName ?? "").trim(),
-        borrowerMail: String(form.borrowerMail ?? "").trim(),
-        borrowingDate: form.borrowingDate,
-        book: newBook || created.book || { id: Number(form.bookId) },
-      },
-      ...prev,
-    ]);
-
+    await createBorrow(form);
     toast.success("Kayıt eklendi");
-
-    // diğer yerler dinliyorsa söyleyelim (sayfa load çağırıyorsa çağırır)
+    await load();
     window.dispatchEvent(new Event("borrows:changed"));
   };
 
@@ -97,7 +78,6 @@ export function BorrowingProvider({ children }) {
       toast.error("Lütfen bir kitap seçin");
       return;
     }
-
     const prev = borrows.find((r) => r.id === id);
     const bookChanged = prev?.book?.id !== Number(form.bookId);
     if (
@@ -107,38 +87,40 @@ export function BorrowingProvider({ children }) {
       toast.error("Stok yetersiz — seçilen kitap için güncelleme yapılamaz.");
       return;
     }
-
-    // 1) API isteği (await)
     await updateBorrowApi(id, form);
-
-    // 2) tabloyu anında güncelle
-    const patchedBook = books.find((b) => b.id === Number(form.bookId)) ||
-      prev?.book || { id: Number(form.bookId) };
-
-    setBorrows((prevList) =>
-      prevList.map((r) =>
-        r.id === id
-          ? {
-              ...r,
-              borrowerName: String(form.borrowerName ?? "").trim(),
-              borrowerMail: String(form.borrowerMail ?? "").trim(),
-              borrowingDate: form.borrowingDate,
-              book: patchedBook,
-            }
-          : r
-      )
-    );
-
     toast.success("Kayıt güncellendi");
+    await load();
+    window.dispatchEvent(new Event("borrows:changed"));
+  };
 
+  
+  const markReturned = async (id) => {
+    const r = borrows.find((x) => x.id === id);
+    if (!r) {
+      toast.error("Kayıt bulunamadı");
+      return;
+    }
+    if (r.returnDate) {
+      toast("Bu kayıt zaten iade edilmiş.");
+      return;
+    }
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    await updateBorrowApi(id, {
+      borrowerName: r.borrowerName,
+      borrowerMail: r.borrowerMail,
+      borrowingDate: toDateInput(r.borrowingDate),
+      bookId: r.book?.id,
+      returnDate: today,
+    });
+    toast.success("İade edildi");
+    await load();
+    window.dispatchEvent(new Event("borrows:changed"));
   };
 
   const remove = async (id) => {
     await deleteBorrow(id);
-    // hemen listeden düşür
-    setBorrows((prev) => prev.filter((r) => r.id !== id));
     toast.success("Kayıt silindi");
-    // Diğer yerler dinliyorsa haber ver
+    await load();
     window.dispatchEvent(new Event("borrows:changed"));
   };
 
@@ -151,6 +133,7 @@ export function BorrowingProvider({ children }) {
       add,
       update,
       remove,
+      markReturned, 
       remainingFor,
       toDateInput,
     }),
